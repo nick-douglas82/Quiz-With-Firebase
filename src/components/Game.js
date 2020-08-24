@@ -7,14 +7,15 @@ export default class Game extends Component {
     super(props);
     this.state = {
       questions: null,
-      currentQuestion: null
+      currentQuestion: null,
+      loading: true
     }
   }
 
   async componentDidMount() {
     try {
       const questions = await loadQuestions();
-      this.setState({questions, currentQuestion: questions[0]})
+      this.setState({questions, currentQuestion: questions[0], loading: false})
     } catch (e) {
       console.error(e)
     }
@@ -23,7 +24,8 @@ export default class Game extends Component {
   render() {
     return (
       <>
-        {this.state.currentQuestion && (
+        {this.state.loading && <div id="loader"></div>}
+        {!this.state.loading && this.state.currentQuestion && (
           <Question question={this.state.currentQuestion} />
         )}
       </>

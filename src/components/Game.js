@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import Question from './Question';
-import { loadQuestions } from '../helpers/QuestionsHelper';
+import SaveScoreForm from './SaveScoreForm';
 import HUD from './HUD';
+import { loadQuestions } from '../helpers/QuestionsHelper';
 
 export default class Game extends Component {
   constructor(props) {
@@ -11,7 +12,8 @@ export default class Game extends Component {
       currentQuestion: null,
       loading: true,
       score: 0,
-      questionNumber: 0
+      questionNumber: 0,
+      done: false,
     }
   }
 
@@ -27,6 +29,9 @@ export default class Game extends Component {
   }
 
   changeQuestion = (bonus = 0) => {
+    if (this.state.questions.length === 0) {
+      return this.setState({done: true});
+    }
     const randomQuestionIndex = Math.floor(Math.random() * this.state.questions.length);
     const currentQuestion = this.state.questions[randomQuestionIndex];
     const remainingQuestions = [...this.state.questions];
@@ -44,13 +49,14 @@ export default class Game extends Component {
   render() {
     return (
       <>
-        {this.state.loading && <div id="loader"></div>}
-        {!this.state.loading && this.state.currentQuestion && (
+        {this.state.loading && !this.state.done && <div id="loader"></div>}
+        {!this.state.done && !this.state.loading && this.state.currentQuestion && (
           <>
             <HUD score={this.state.score} questionNumber={this.state.questionNumber} />
             <Question question={this.state.currentQuestion} changeQuestion={this.changeQuestion} />
           </>
         )}
+        {this.state.done && <SaveScoreForm score={this.state.score} />}
       </>
     )
   }
